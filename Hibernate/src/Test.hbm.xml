@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Test" table="TABLE_Test">
+
+        <id name="id" type="long">
+            <column name="id"/>
+            <generator class="identity"></generator>
+        </id>
+        <property name="jLong" type="java.lang.Long">
+            <column name="jLong"/>
+        </property>
+
+        <property name="jUDate" type="java.util.Date">
+            <column name="jUDate"></column>
+        </property>
+
+        <property name="jSDate" type="java.sql.Date">
+            <column name="jSDate"></column>
+        </property>
+
+        <property name="hDate" type="date">
+            <column name="hDate"></column>
+        </property>
+
+        <property name="jTime" type="java.sql.Time">
+            <column name="jTime"></column>
+        </property>
+
+        <property name="hTime" type="time">
+            <column name="hTime"></column>
+        </property>
+
+    </class>
+</hibernate-mapping>
