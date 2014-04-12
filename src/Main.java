@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.net.URI;
 
 /**
  * @author Cynric-Shu
@@ -31,13 +29,15 @@ class Child extends Father {
 public class Main {
 
     public static void main(String[] args) {
-        try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss").parse("2013-13-13T10:10:10");
-            System.out.println(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//        for (int i = 0; i < 2000; i++) {
+//            int random = (int) (Math.random() * 100 + 1);
+//            System.out.println(String.valueOf(random));
+//        }
 
+        String string = "http://localhost:8080/api/odata?a=5";
+
+        URI uri = URI.create(string);
+        System.out.println(uri.toString());
 
 //        String a = "你好";
 //
