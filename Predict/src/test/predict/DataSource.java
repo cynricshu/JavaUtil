@@ -13,7 +13,8 @@ public class DataSource {
 
     static String driverName = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     static String dbName = "HotelRecommend";
-    static String dbUrl = "jdbc:sqlserver://192.168.1.102:1433;DatabaseName=" + dbName;
+    static String ipAddr = "192.168.1.118";
+    static String dbUrl = "jdbc:sqlserver://" + ipAddr + ":1433;DatabaseName=" + dbName;
     static String dbUser = "sa";
     static String dbPwd = "123456";
 

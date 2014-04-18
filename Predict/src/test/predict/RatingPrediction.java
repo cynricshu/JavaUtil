@@ -1,9 +1,6 @@
 package test.predict;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +12,86 @@ import java.util.Map;
 public class RatingPrediction {
 
     // 计算用户对项目的预测评分
+    public static float predict(int userId,
+                                int neighbornum) {
+        float prediction = 0;
+        // 按用户间相似度从高到低获得所有邻居列表
+        Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
+        float userAvgForAllItem = getAvgForAllItem(userId, map); // Ru
+
+        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(userId, map, neighbornum);
+
+        float numerator = 0;
+        float denominator = 0;
+        int itemId = getPredictItemId(userId, neighborlist);
+
+        for (UserNeiborSim userNeiborSim : neighborlist) {
+            int neiborId = userNeiborSim.getNeighborid();
+            float sim = userNeiborSim.getSimilarity();
+
+            Float R = getMarkForItem(neiborId, itemId, map);
+            Float Ravg = getAvgForAllItem(neiborId, map);
+
+            if (R != null) {
+                numerator += sim * (R - Ravg);
+                denominator += Math.abs(sim);
+            }
+
+        }
+
+        prediction = userAvgForAllItem + numerator / denominator;
+        return prediction;
+
+    }
+
+    public static Float getAvgForAllItem(int userId, Map<Integer, List<UserHotelInfo>> map) {
+        if (map.containsKey(userId)) {
+            List<UserHotelInfo> list = map.get(userId);
+
+            float sum = 0;
+            for (UserHotelInfo userHotelInfo : list) {
+                sum += userHotelInfo.getGeneral();
+            }
+
+            return sum / list.size();
+
+        } else {
+            System.err.printf("userId not exist");
+            return null;
+        }
+    }
+
+    public static Float getMarkForItem(int userId, int itemId, Map<Integer, List<UserHotelInfo>> map) {
+        if (map.containsKey(userId)) {
+            List<UserHotelInfo> list = map.get(userId);
+
+            float sum = 0;
+            int appear = 0;
+            for (UserHotelInfo userHotelInfo : list) {
+                if (itemId == userHotelInfo.getHotelId()) {
+                    sum += userHotelInfo.getGeneral();
+                    appear += 1;
+                }
+            }
+            if (appear == 0) {
+                return null;
+            } else {
+                return sum / appear;
+            }
+        } else {
+            System.err.printf("userId not exist");
+            return null;
+        }
+    }
+
+
+    // 计算用户对项目的预测评分
     public static float getPrediction(int activeUserid, int preItemid,
                                       int neighbornum) {
         float prediction = 0;
         // 按用户间相似度从高到低获得所有邻居列表
         Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
-        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(activeUserid, map);
+        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(activeUserid, map, neighbornum);
 
         // 得到目标用户的平均评分值
         float activeavg_rating = user_rating_avg(activeUserid);
@@ -63,6 +134,37 @@ public class RatingPrediction {
         float f = 0;
 
         return f;
+    }
+
+    public static int getPredictItemId(int userId, List<UserNeiborSim> neighborlist) {
+        Connection conn = DataSource.getConnection();
+        String array = "";
+        for (UserNeiborSim sim : neighborlist) {
+            array += "," + sim.getNeighborid();
+        }
+        array = array.substring(1);
+
+        String sql = "select count(t1.username) as sum, t1.hotelid from commentinfo t1 inner join userinfo t2 on t1.username = t2.username\n" +
+                "where t2.UserID in (" + array + ") \n" +
+                "and t1.HotelID not in \n" +
+                "(\n" +
+                "select t1.hotelId from commentinfo t1 inner join userinfo t2 on t1.username = t2.username\n" +
+                "where t2.userId = " + userId + " \n" +
+                ")\n" +
+                "group by t1.HotelID \n" +
+                "order by sum desc";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                int hotelId = rs.getInt("hotelId");
+                return hotelId;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+
     }
 
     //计算 RF

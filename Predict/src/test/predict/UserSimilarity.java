@@ -206,27 +206,28 @@ public class UserSimilarity {
         return weight;
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, int neighbornum) {
         Map<Integer, List<UserHotelInfo>> map = queryAllRatingInfo();
-        return orderSimilarity(userId, map);
+        return orderSimilarity(userId, map, neighbornum);
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum) {
         List<UserNeiborSim> list = new ArrayList<>();
 
         List<UserHotelInfo> userRatingList = map.get(userId);
-        map.remove(userId);
 
         for (Object obj : map.keySet()) {
             int currUserId = Integer.parseInt(obj.toString());
-            List<UserHotelInfo> neiborRatingList = map.get(currUserId);
+            if (currUserId != userId) {
+                List<UserHotelInfo> neiborRatingList = map.get(currUserId);
 
-            float similarity = getEDSimilarity(userRatingList, neiborRatingList);
+                float similarity = getEDSimilarity(userRatingList, neiborRatingList);
 
-            UserNeiborSim userNeiborSim = new UserNeiborSim();
-            userNeiborSim.setNeighborid(currUserId);
-            userNeiborSim.setSimilarity(similarity);
-            list.add(userNeiborSim);
+                UserNeiborSim userNeiborSim = new UserNeiborSim();
+                userNeiborSim.setNeighborid(currUserId);
+                userNeiborSim.setSimilarity(similarity);
+                list.add(userNeiborSim);
+            }
         }
 
         Collections.sort(list, new Comparator<UserNeiborSim>() {
@@ -249,7 +250,11 @@ public class UserSimilarity {
                 }
             }
         });
-        return list;
+        if (list.size() < neighbornum) {
+            return list;
+        } else {
+            return list.subList(0, neighbornum);
+        }
     }
 
     static List<UserHotelInfo> queryRatingInfo(int userId) {

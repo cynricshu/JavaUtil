@@ -1,7 +1,5 @@
 package test.predict;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -25,23 +23,36 @@ public class BootStrap {
 //            System.out.println();
 //
 //        }
-        Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
+
+//        while (true) {
+//            System.out.println("new turn");
+//            System.out.println("please input a userId");
+//            int userId = Integer.parseInt(in.nextLine());
+//            List<UserNeiborSim> list = UserSimilarity.orderSimilarity(userId, map);
+////            list.toString();
+//
+//
+//            List<Integer> hotelIdList = Count.getMaxCountHotelId(list.subList(0, 20), map, 5);
+//            for (Integer i : hotelIdList) {
+//                System.out.printf(i.toString() + " ");
+//            }
+//
+//
+//        }
+
 
         while (true) {
             System.out.println("new turn");
             System.out.println("please input a userId");
             int userId = Integer.parseInt(in.nextLine());
-            List<UserNeiborSim> list = UserSimilarity.orderSimilarity(userId, map);
-//            list.toString();
-
-
-            List<Integer> hotelIdList = Count.getMaxCountHotelId(list.subList(0, 20), map, 5);
-            for (Integer i : hotelIdList) {
-                System.out.printf(i.toString() + " ");
-            }
-
-
+//            System.out.println("please input an itemId");
+//            int itemId = Integer.parseInt(in.nextLine());
+            System.out.println("please input the number of neighbours");
+            int neighbourNum = Integer.parseInt(in.nextLine());
+            System.out.println("Prediction for ED: " + RatingPrediction.predict(userId, neighbourNum));
+            System.out.println();
         }
+
 
     }
 
