@@ -131,6 +131,16 @@ public class UserSimilarity {
         });
     }
 
+    public static float getPearsonSimilarity_General(int activeUserid,
+                                                         int otherUserid) {
+        return getPearsonSimilarity(activeUserid, otherUserid, new ValueGetter() {
+            @Override
+            public float getValue(UserHotelInfo userHotelInfo) {
+                return userHotelInfo.getGeneral();
+            }
+        });
+    }
+
     public static float getPearsonSimilarity_environment(List<UserHotelInfo> p1,
                                                          List<UserHotelInfo> p2) {
         return getPearsonSimilarity(p1, p2, new ValueGetter() {
@@ -206,12 +216,12 @@ public class UserSimilarity {
         return weight;
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, int neighbornum) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, int neighbornum, Algrithom alg) {
         Map<Integer, List<UserHotelInfo>> map = queryAllRatingInfo();
         return orderSimilarity(userId, map, neighbornum);
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum, Algrithom alg) {
         List<UserNeiborSim> list = new ArrayList<>();
 
         List<UserHotelInfo> userRatingList = map.get(userId);
@@ -221,7 +231,22 @@ public class UserSimilarity {
             if (currUserId != userId) {
                 List<UserHotelInfo> neiborRatingList = map.get(currUserId);
 
-                float similarity = getEDSimilarity(userRatingList, neiborRatingList);
+                float similarity;
+                switch(alg) {
+                    case Algrithom.SINGLE:
+                        similarity = getPearsonSimilarity_General(userRatingList, neiborRatingList);
+                        break;
+                    case Algrithom.MULTIPLE:
+                        similarity = getAvgPearsonSimilarity(userRatingList, neiborRatingList);
+                        break;
+                    case Algrithom.ED:
+                        similarity = getEDSimilarity(userRatingList, neiborRatingList);
+                        break;
+
+                    default:
+                        break;
+                }
+                
 
                 UserNeiborSim userNeiborSim = new UserNeiborSim();
                 userNeiborSim.setNeighborid(currUserId);
