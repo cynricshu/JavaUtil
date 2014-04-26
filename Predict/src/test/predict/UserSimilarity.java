@@ -131,16 +131,6 @@ public class UserSimilarity {
         });
     }
 
-    public static float getPearsonSimilarity_General(int activeUserid,
-                                                         int otherUserid) {
-        return getPearsonSimilarity(activeUserid, otherUserid, new ValueGetter() {
-            @Override
-            public float getValue(UserHotelInfo userHotelInfo) {
-                return userHotelInfo.getGeneral();
-            }
-        });
-    }
-
     public static float getPearsonSimilarity_environment(List<UserHotelInfo> p1,
                                                          List<UserHotelInfo> p2) {
         return getPearsonSimilarity(p1, p2, new ValueGetter() {
@@ -151,11 +141,35 @@ public class UserSimilarity {
         });
     }
 
+    public static float getPearsonSimilarity_General(int activeUserid,
+                                                     int otherUserid) {
+        return getPearsonSimilarity(activeUserid, otherUserid, new ValueGetter() {
+            @Override
+            public float getValue(UserHotelInfo userHotelInfo) {
+                return userHotelInfo.getGeneral();
+            }
+        });
+    }
+
+    public static float getPearsonSimilarity_General(List<UserHotelInfo> p1,
+                                                     List<UserHotelInfo> p2) {
+        return getPearsonSimilarity(p1, p2, new ValueGetter() {
+            @Override
+            public float getValue(UserHotelInfo userHotelInfo) {
+                return userHotelInfo.getGeneral();
+            }
+        });
+    }
+
     public static float getAvgPearsonSimilarity(int activeUserid,
                                                 int otherUserid) {
-        float weight = 0;
         List<UserHotelInfo> p1 = queryRatingInfo(activeUserid);
         List<UserHotelInfo> p2 = queryRatingInfo(otherUserid);
+        return getAvgPearsonSimilarity(p1, p2);
+    }
+
+    public static float getAvgPearsonSimilarity(List<UserHotelInfo> p1, List<UserHotelInfo> p2) {
+        float weight = 0;
         weight = (getPearsonSimilarity_health(p1, p2)
                 + getPearsonSimilarity_service(p1, p2)
                 + getPearsonSimilarity_equipment(p1, p2) +
@@ -216,12 +230,12 @@ public class UserSimilarity {
         return weight;
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, int neighbornum, Algrithom alg) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, int neighbornum, Algorithm alg) {
         Map<Integer, List<UserHotelInfo>> map = queryAllRatingInfo();
-        return orderSimilarity(userId, map, neighbornum);
+        return orderSimilarity(userId, map, neighbornum, alg);
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum, Algrithom alg) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum, Algorithm alg) {
         List<UserNeiborSim> list = new ArrayList<>();
 
         List<UserHotelInfo> userRatingList = map.get(userId);
@@ -231,22 +245,22 @@ public class UserSimilarity {
             if (currUserId != userId) {
                 List<UserHotelInfo> neiborRatingList = map.get(currUserId);
 
-                float similarity;
-                switch(alg) {
-                    case Algrithom.SINGLE:
+                float similarity = 0f;
+                switch (alg) {
+                    case SINGLE:
                         similarity = getPearsonSimilarity_General(userRatingList, neiborRatingList);
                         break;
-                    case Algrithom.MULTIPLE:
+                    case MULTIPLE:
                         similarity = getAvgPearsonSimilarity(userRatingList, neiborRatingList);
                         break;
-                    case Algrithom.ED:
+                    case ED:
                         similarity = getEDSimilarity(userRatingList, neiborRatingList);
                         break;
 
                     default:
                         break;
                 }
-                
+
 
                 UserNeiborSim userNeiborSim = new UserNeiborSim();
                 userNeiborSim.setNeighborid(currUserId);

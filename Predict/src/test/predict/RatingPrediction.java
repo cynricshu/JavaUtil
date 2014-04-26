@@ -13,7 +13,7 @@ public class RatingPrediction {
 
     // 计算用户对项目的预测评分
     public static float predict(int userId,
-                                int neighbornum, Algrithom alg) {
+                                int neighbornum, Algorithm alg) {
         float prediction = 0;
         // 按用户间相似度从高到低获得所有邻居列表
         Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
@@ -84,57 +84,6 @@ public class RatingPrediction {
         }
     }
 
-
-    // 计算用户对项目的预测评分
-    public static float getPrediction(int activeUserid, int preItemid,
-                                      int neighbornum) {
-        float prediction = 0;
-        // 按用户间相似度从高到低获得所有邻居列表
-        Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
-        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(activeUserid, map, neighbornum);
-
-        // 得到目标用户的平均评分值
-        float activeavg_rating = user_rating_avg(activeUserid);
-        float neiboravgrating = 0;
-
-        int neiborid = 0;
-        float neiborWeight = 0;
-        float neiborSumWeight = 0;
-        float neiborItemRating = 0;
-        float part = 0;// 预测公式的后半部分
-        int n = 0;
-        for (int i = 0; i < neighborlist.size(); i++) {
-            neiborItemRating = neibor_item_rating(neiborid, preItemid);// 得到邻居用户对该项目的评分
-            if (neiborItemRating != 0) {
-                n++;
-                if (n <= neighbornum) {
-                    neiborid = neighborlist.get(i).getNeighborid();
-                    neiborWeight = neighborlist.get(i).getSimilarity();
-
-                    neiborSumWeight += neiborWeight;
-                    neiboravgrating = user_rating_avg(neiborid);// 得到邻居用户的平均评分值
-                    part += Math.abs((neiborItemRating - neiboravgrating)) * neiborWeight;
-                } else {
-                    break;
-                }
-            }
-        }
-        prediction = activeavg_rating + part / neiborSumWeight;
-//        prediction = toShow(prediction); //格式化
-        return prediction;
-    }
-
-    public static float user_rating_avg(int userId) {
-        float f = 0;
-
-        return f;
-    }
-
-    public static float neibor_item_rating(int neiborId, int itemId) {
-        float f = 0;
-
-        return f;
-    }
 
     public static int getPredictItemId(int userId, List<UserNeiborSim> neighborlist) {
         Connection conn = DataSource.getConnection();
