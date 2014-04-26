@@ -49,7 +49,9 @@ public class BootStrap {
 //            int itemId = Integer.parseInt(in.nextLine());
             System.out.println("please input the number of neighbours");
             int neighbourNum = Integer.parseInt(in.nextLine());
-            System.out.println("Prediction for ED: " + RatingPrediction.predict(userId, neighbourNum));
+            System.out.println("Prediction for single property: " + RatingPrediction.predict(userId, neighbourNum, Algrithom.SINGLE));
+            System.out.println("Prediction for multiple property: " + RatingPrediction.predict(userId, neighbourNum, Algrithom.MULTIPLE));
+            System.out.println("Prediction for ED: " + RatingPrediction.predict(userId, neighbourNum, Algrithom.ED));
             System.out.println();
         }
 

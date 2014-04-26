@@ -13,13 +13,13 @@ public class RatingPrediction {
 
     // 计算用户对项目的预测评分
     public static float predict(int userId,
-                                int neighbornum) {
+                                int neighbornum, Algrithom alg) {
         float prediction = 0;
         // 按用户间相似度从高到低获得所有邻居列表
         Map<Integer, List<UserHotelInfo>> map = UserSimilarity.queryAllRatingInfo();
         float userAvgForAllItem = getAvgForAllItem(userId, map); // Ru
 
-        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(userId, map, neighbornum);
+        List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(userId, map, neighbornum, alg);
 
         float numerator = 0;
         float denominator = 0;
