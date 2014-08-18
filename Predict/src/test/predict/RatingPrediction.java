@@ -20,6 +20,7 @@ public class RatingPrediction {
         float userAvgForAllItem = getAvgForAllItem(userId, map); // Ru
 
         List<UserNeiborSim> neighborlist = UserSimilarity.orderSimilarity(userId, map, neighbornum, alg);
+        print(neighborlist, "邻居列表", new String[]{"邻居用户Id", "与当前用户的相似性"});
 
         float numerator = 0;
         float denominator = 0;
@@ -41,6 +42,22 @@ public class RatingPrediction {
 
         prediction = userAvgForAllItem + numerator / denominator;
         return prediction;
+
+    }
+
+    public static void print(List<UserNeiborSim> list, String title, String[] fieldName) {
+        System.out.println(title + ": ");
+        for (String field : fieldName) {
+            System.out.printf(field);
+            System.out.printf("     ");
+        }
+        System.out.println();
+        for (UserNeiborSim userNeiborSim : list) {
+            System.out.printf(String.valueOf(userNeiborSim.getNeighborid()));
+            System.out.printf("     ");
+            System.out.printf(String.valueOf(userNeiborSim.getSimilarity()));
+            System.out.println();
+        }
 
     }
 
@@ -82,6 +99,34 @@ public class RatingPrediction {
             System.err.printf("userId not exist");
             return null;
         }
+    }
+
+    public static Float getAvgStarForUser(int userId, Map<Integer, List<UserHotelInfo>> map) {
+        if (map.containsKey(userId)) {
+            List<UserHotelInfo> list = map.get(userId);
+            String hotelIdString = "";
+            for (UserHotelInfo userHotelInfo : list) {
+                hotelIdString += ",";
+                hotelIdString += userHotelInfo.getHotelId();
+            }
+            hotelIdString = hotelIdString.substring(1);
+            String sql = "select avg(hotelLevel) as avgLevel from hotelinfo where hotelId in ( " + hotelIdString + ") ";
+
+            Connection conn = DataSource.getConnection();
+            Statement stmt = null;
+            try {
+                stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if (rs.next()) {
+                    return rs.getFloat("hotelLevel");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+        return 0f;
     }
 
 

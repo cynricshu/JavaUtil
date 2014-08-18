@@ -36,13 +36,13 @@ public class UserSimilarity {
         int oUserItemid = 0;
         float aUserRating = 0;
         float oUserRating = 0;
-        int numCommonItems = 0;
+        int numCommonItems = 0; // 相同评分项的个数
         for (int p = 0; p < asize; p++) {
-            for (int q = 0; q < osize; q++) {
-                aUserRating = valueGetter.getValue(p1.get(p));
-                aUserItemid = p1.get(p).getHotelId();
+            aUserRating = valueGetter.getValue(p1.get(p));
+            aUserItemid = p1.get(p).getHotelId();
 
-                oUserRating = valueGetter.getValue(p1.get(p));
+            for (int q = 0; q < osize; q++) {
+                oUserRating = valueGetter.getValue(p2.get(q));
                 oUserItemid = p2.get(q).getHotelId();
                 // 对相同项目评分进行计算
                 if (aUserItemid == oUserItemid) {
@@ -235,7 +235,7 @@ public class UserSimilarity {
         return orderSimilarity(userId, map, neighbornum, alg);
     }
 
-    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum, Algorithm alg) {
+    public static List<UserNeiborSim> orderSimilarity(int userId, Map<Integer, List<UserHotelInfo>> map, int neighbornum, final Algorithm alg) {
         List<UserNeiborSim> list = new ArrayList<>();
 
         List<UserHotelInfo> userRatingList = map.get(userId);
@@ -279,14 +279,37 @@ public class UserSimilarity {
                 } else if (!s1.isNaN() && s2.isNaN()) {
                     return -1;
                 } else {
-                    if (s1 < s2) {
-                        return -1;
-                    } else if (s1 > s2) {
-                        return 1;
-                    } else {
-                        return 0;
+                    switch (alg) {
+                        case SINGLE:
+                            if (s1 < s2) {
+                                return 1;
+                            } else if (s1 > s2) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        case MULTIPLE:
+                            if (s1 < s2) {
+                                return 1;
+                            } else if (s1 > s2) {
+                                return -1;
+                            } else {
+                                return 0;
+                            }
+                        case ED:
+                            if (s1 < s2) {
+                                return -1;
+                            } else if (s1 > s2) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        default:
+                            break;
                     }
+
                 }
+                return 0;
             }
         });
         if (list.size() < neighbornum) {
