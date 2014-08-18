@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        String originRegex = "/api/BPM/form\\?(?<key>taskid|processid)=(?<value>.*)";
-        String input = "/api/BPM/form?taskid=704";
+        String originRegex = "/api/odata/(?<datasource>[^/]+)/(?<modelname>[^/]+)/(?:\\$batch)";
+        String input = "/api/odata/PEMEP/test/$batch";
         List<String> list = getGroupNames(originRegex);
         for (String s : list) {
             System.out.println(s);
