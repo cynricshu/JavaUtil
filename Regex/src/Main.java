@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        String originRegex = "/api/odata/(?<datasource>[^/]+)/(?<modelname>[^/]+)/(?:\\$batch)";
-        String input = "/api/odata/PEMEP/test/$batch";
+        String originRegex = "/api/GIS/alarmPara/(?<modelName>dq|ds|fq|ws|zs).*";
+        String input = "/api/GIS/alarmPara/dq?a=a";
         List<String> list = getGroupNames(originRegex);
         for (String s : list) {
             System.out.println(s);
@@ -16,9 +16,10 @@ public class Main {
         Pattern pattern = Pattern.compile(originRegex);
         Matcher matcher = pattern.matcher(input);
 
-        if (matcher.find()) {
-            System.out.println(matcher.group("key"));
-            System.out.println(matcher.group("value"));
+        if (matcher.matches()) {
+            System.out.println("match");
+            System.out.println(matcher.group("modelName"));
+//            System.out.println(matcher.group("value"));
         } else {
             System.out.println("didn't match");
         }
