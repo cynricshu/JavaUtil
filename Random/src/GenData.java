@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * User: Cynric
@@ -56,22 +55,22 @@ public class GenData {
         return rtn;
     }
 
-    public static String genString(int length) {
-        length = (int) (Math.random() * length) + 1;
-
-        StringBuilder builder = new StringBuilder(length);
-        builder.append((char) (ThreadLocalRandom.current().nextInt(65, 91)));
-
-        for (int i = 1; i < length; i++) {
-            builder.append((char) (ThreadLocalRandom.current().nextInt(97, 123)));
-        }
-        return builder.toString();
-    }
+//    public static String genString(int length) {
+//        length = (int) (Math.random() * length) + 1;
+//
+//        StringBuilder builder = new StringBuilder(length);
+//        builder.append((char) (ThreadLocalRandom.current().nextInt(65, 91)));
+//
+//        for (int i = 1; i < length; i++) {
+//            builder.append((char) (ThreadLocalRandom.current().nextInt(97, 123)));
+//        }
+//        return builder.toString();
+//    }
 
     public static JSONObject genPeople() {
         JSONObject people = new JSONObject();
         try {
-            people.put("Name", GenData.genString(6));
+//            people.put("Name", GenData.genString(6));
             people.put("Age", GenData.genAge(1, 100));
             people.put("Year", GenData.genYear(1970, 2015));
             people.put("BirthDate", GenData.genDate("1970-01-01", "2014-12-30"));

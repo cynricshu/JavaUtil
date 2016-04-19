@@ -6,8 +6,10 @@ import java.util.regex.Pattern;
 public class Main {
 
     public static void main(String[] args) {
-        String originRegex = "/api/GIS/alarmPara/(?<modelName>dq|ds|fq|ws|zs).*";
-        String input = "/api/GIS/alarmPara/dq?a=a";
+//        String originRegex = "/api/GIS/alarmPara/(?<modelName>dq|ds|fq|ws|zs).*";
+        String originRegex = "/v0.1/(?!user/signup).*";
+        String input = "/v0.1/device/1";
+
         List<String> list = getGroupNames(originRegex);
         for (String s : list) {
             System.out.println(s);
@@ -18,7 +20,7 @@ public class Main {
 
         if (matcher.matches()) {
             System.out.println("match");
-            System.out.println(matcher.group("modelName"));
+//            System.out.println(matcher.group("modelName"));
 //            System.out.println(matcher.group("value"));
         } else {
             System.out.println("didn't match");
